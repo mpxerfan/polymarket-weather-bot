@@ -1,0 +1,11 @@
+{
+  "name": "Rust Dev",
+  "postCreateCommand": "curl https://sh.rustup.rs -sSf | sh -s -- -y && echo 'source $HOME/.cargo/env' >> ~/.bashrc",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer"
+      ]
+    }
+  }
+}
