@@ -72,7 +72,8 @@ impl TelegramClient {
 
     fn format_metar_message(&self, metar_data: &METARData) -> String {
         let airport = &metar_data.airport_code;
-        let temp = metar_data.temperature_celsius;
+        let temp_celsius = metar_data.temperature_celsius;
+        let temp_fahrenheit = metar_data.temperature_fahrenheit;
         let humidity = metar_data
             .humidity_percent
             .map(|h| format!("{:.0}%", h))
@@ -83,24 +84,32 @@ impl TelegramClient {
         // Converter timestamp Zulu para Auckland
         let auckland_time = convert_to_auckland_time(&metar_data.timestamp_utc);
 
+        // Mostrar temperatura em Celsius e Fahrenheit para KLGA e KATL
+        let temp_display = if airport == "KLGA" || airport == "KATL" {
+            format!("*{:.0}°C ({:.0}°F)*", temp_celsius, temp_fahrenheit)
+        } else {
+            format!("*{:.0}°C*", temp_celsius)
+        };
+
         format!(
             "📡 *AVIATION WEATHER METAR*\n\
             ✈️ *Aeroporto: {}*\n\n\
-            🌡️ Temperatura: *{:.0}°C*\n\
+            🌡️ Temperatura: {}\n\
             💧 Umidade: *{}*\n\
             💨 Vento: *{}*\n\
             📊 Categoria: *{}*\n\
             🕐 Horário Auckland: *{}*\n\
             ⏰ Zulu (UTC): *{}*\n\n\
             📝 Raw: `{}`",
-            airport, temp, humidity, wind, category, auckland_time, 
+            airport, temp_display, humidity, wind, category, auckland_time, 
             metar_data.timestamp_utc, metar_data.raw_metar
         )
     }
 
     fn format_openmeteo_message(&self, weather_data: &OpenMeteoData) -> String {
         let airport = &weather_data.airport_code;
-        let temp = weather_data.temperature_celsius;
+        let temp_celsius = weather_data.temperature_celsius;
+        let temp_fahrenheit = weather_data.temperature_fahrenheit;
         let humidity = weather_data.humidity_percent;
         let wind = weather_data.wind_speed_kmh;
         let direction = weather_data.wind_direction;
@@ -109,15 +118,22 @@ impl TelegramClient {
         // Converter timestamp ISO 8601 para Auckland
         let auckland_time = convert_to_auckland_time(&weather_data.timestamp_utc);
 
+        // Mostrar temperatura em Celsius e Fahrenheit para KLGA e KATL
+        let temp_display = if airport == "KLGA" || airport == "KATL" {
+            format!("*{:.1}°C ({:.1}°F)*", temp_celsius, temp_fahrenheit)
+        } else {
+            format!("*{:.1}°C*", temp_celsius)
+        };
+
         format!(
             "🌐 *OPEN-METEO FORECAST*\n\
             ✈️ *Aeroporto: {}*\n\n\
-            🌡️ Temperatura: *{:.1}°C*\n\
+            🌡️ Temperatura: {}\n\
             💧 Umidade: *{:.0}%*\n\
             💨 Vento: *{:.1} km/h* (Dir: {}°)\n\
             🌤️ Condição: *{}*\n\
             🕐 Horário Auckland: *{}*",
-            airport, temp, humidity, wind, direction, description, auckland_time
+            airport, temp_display, humidity, wind, direction, description, auckland_time
         )
     }
 

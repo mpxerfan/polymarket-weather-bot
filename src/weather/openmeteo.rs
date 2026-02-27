@@ -10,6 +10,7 @@ pub struct OpenMeteoData {
     pub latitude: f64,
     pub longitude: f64,
     pub temperature_celsius: f64,
+    pub temperature_fahrenheit: f64,
     pub humidity_percent: f64,
     pub wind_speed_kmh: f64,
     pub wind_direction: u32,
@@ -95,6 +96,9 @@ impl OpenMeteoClient {
 
         let weather_description = self.get_weather_description(weather_code);
 
+        // Converter Celsius para Fahrenheit: F = (C * 9/5) + 32
+        let temperature_fahrenheit = (temperature * 9.0 / 5.0) + 32.0;
+
         // Extrair timestamp oficial da API Open-Meteo (formato ISO 8601)
         let timestamp_utc = current["time"]
             .as_str()
@@ -106,6 +110,7 @@ impl OpenMeteoClient {
             latitude: lat,
             longitude: lon,
             temperature_celsius: temperature,
+            temperature_fahrenheit,
             humidity_percent: humidity,
             wind_speed_kmh: wind_speed,
             wind_direction,

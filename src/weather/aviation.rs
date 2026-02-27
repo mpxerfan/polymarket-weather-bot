@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 pub struct METARData {
     pub airport_code: String,
     pub temperature_celsius: f64,
+    pub temperature_fahrenheit: f64,
     pub humidity_percent: Option<f64>,
     pub wind_speed_kmh: f64,
     pub wind_direction: Option<u32>,
@@ -134,9 +135,13 @@ impl AviationWeatherClient {
             format!("UNKNOWN_{}", Utc::now().timestamp_millis())
         };
 
+        // Converter Celsius para Fahrenheit: F = (C * 9/5) + 32
+        let temp_fahrenheit = (temp_celsius * 9.0 / 5.0) + 32.0;
+
         Ok(METARData {
             airport_code: airport_code.to_string(),
             temperature_celsius: temp_celsius,
+            temperature_fahrenheit: temp_fahrenheit,
             humidity_percent,
             wind_speed_kmh,
             wind_direction,
